@@ -1,30 +1,32 @@
 package com.lysenko.thread;
+import java.util.concurrent.Semaphore;
 
 public class Foo {
 
-    volatile int i = 1;
+       private Semaphore s1 = new Semaphore(1);
+       private Semaphore s2 = new Semaphore(0);
+       private Semaphore s3 = new Semaphore(0);
 
-    public synchronized void first(Runnable r) {
-        if (i == 1) {
-            i = 2;
-            r.run();
-            System.out.println(Thread.currentThread() + "first");
-        }
+
+    public void first(Runnable r) throws InterruptedException {
+            s1.acquire();
+                r.run();
+                System.out.println(Thread.currentThread() + "first");
+            s2.release();
+
     }
 
-    public synchronized void second(Runnable r) {
-        if (i == 2) {
-            i = 3;
+    public void second(Runnable r) throws InterruptedException {
+            s2.acquire();
             r.run();
             System.out.println(Thread.currentThread() + "second");
-        }
+            s3.release();
     }
 
-    public synchronized void third(Runnable r)  {
-        if (i == 3) {
-            i = 1;
+    public void third(Runnable r) throws InterruptedException {
+            s3.acquire();
             r.run();
             System.out.println(Thread.currentThread() + "third");
-        }
+            s1.release();
     }
 }
