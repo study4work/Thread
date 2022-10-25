@@ -1,24 +1,30 @@
 package com.lysenko.thread;
 
-import java.util.concurrent.CountDownLatch;
-
 public class Foo {
-    public void first(Runnable r) {
-        System.out.println("first");
+
+    volatile int i = 1;
+
+    public synchronized void first(Runnable r) {
+        if (i == 1) {
+            i = 2;
+            r.run();
+            System.out.println(Thread.currentThread() + "first");
+        }
     }
 
-    public void second(Runnable r) {
-        System.out.println("second");
+    public synchronized void second(Runnable r) {
+        if (i == 2) {
+            i = 3;
+            r.run();
+            System.out.println(Thread.currentThread() + "second");
+        }
     }
 
-    public void third(Runnable r) {
-        System.out.println("third");
-    }
-
-    synchronized void doWork(Runnable r) {
-            first(r);
-            second(r);
-            third(r);
-
+    public synchronized void third(Runnable r)  {
+        if (i == 3) {
+            i = 1;
+            r.run();
+            System.out.println(Thread.currentThread() + "third");
+        }
     }
 }
